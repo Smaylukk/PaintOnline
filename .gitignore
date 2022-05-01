@@ -4,6 +4,8 @@
 /client/node_modules
 /server/node_modules
 /server/test
+.vscode
 
 # misc
-.env
+/client/.env
+/server/.env
