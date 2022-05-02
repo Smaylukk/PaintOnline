@@ -1,12 +1,16 @@
 import { makeAutoObservable } from 'mobx'
+import pictureService from '../services/pictureService';
+import toolState from './toolState';
 
 class CanvasState {
   canvas = null;
+  context = null;
   undoList = [];
   redoList = [];
   username = '';
   socket = null;
   sessionId = null;
+  data = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -26,6 +30,7 @@ class CanvasState {
 
   setCanvas(canvas) {
     this.canvas = canvas;
+    this.context = this.canvas.getContext('2d');
   }
 
   pushToUndo(data) {
@@ -46,9 +51,8 @@ class CanvasState {
       const img = new Image();
       img.src = data;
       img.onload = () => {
-        let ctx = this.canvas.getContext('2d');
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
       }
     } else {
       alert('Це початковий малюнок')
@@ -65,13 +69,40 @@ class CanvasState {
       const img = new Image();
       img.src = data;
       img.onload = () => {
-        let ctx = this.canvas.getContext('2d');
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
       }
     } else {
       alert('Скасованих змін немає')
     }
+  }
+
+  setPicture() {
+    const img = new Image();
+    img.src = this.data;
+    img.onload = () => {
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.context.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+    }
+  }
+
+  setUndoList(list){
+    this.undoList = list;
+  }
+
+  setRedoList(list) {
+    this.redoList = list;
+  }
+
+  async uploadPicture() {
+    const data = {
+      session: this.sessionId,
+      pictureData: this.canvas.toDataURL(),
+      undoList: [],
+      redoList: []
+    };
+
+    await pictureService.savePicture(data);
   }
 }
 

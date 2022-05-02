@@ -5,24 +5,30 @@ import toolState from '../store/toolState';
 import '../styles/canvas.scss'
 import Brush from '../tools/Brush';
 import { Modal, Button } from "react-bootstrap";
-import { useParams } from 'react-router-dom';
-import Rect from '../tools/Rect';
-import Circle from '../tools/Circle';
-import Eraser from '../tools/Eraser';
-import Clear from '../tools/Clear';
-import Line from '../tools/Line';
+import { Link, Navigate, useParams } from 'react-router-dom';
+import pictureService from '../services/pictureService';
 
 
 const Canvas = observer(() => {
   const canvasRef = useRef();
   const usernameRef = useRef();
   const [modal, setModal] = useState(true);
+  const [pictures, setPictures] = useState([]);
   const params = useParams();
-  const URL_WS = process.env.ERL_WS || 'ws://localhost:5000/';
+  const URL_WS = process.env.URL_WS || 'ws://localhost:5000/';
 
+  //встановлення канвасу
   useEffect(() => {
     canvasState.setCanvas(canvasRef.current);
-  }, [])
+  }, []);
+
+  //отримання всіх зображень
+  useEffect(() => {
+    pictureService.getAllPictures()
+      .then(data => {
+        setPictures(data);
+      });
+  }, []);
 
   useEffect(() => {
     if (canvasState.username) {
@@ -46,10 +52,10 @@ const Canvas = observer(() => {
         
         switch (msg.method) {
           case 'connection':
-            console.log(msg);   
+            //console.log(msg);   
             break;        
           case 'draw':
-            console.log(msg);   
+            //console.log(msg);   
             drawHandler(msg);
             break;
 
@@ -58,67 +64,37 @@ const Canvas = observer(() => {
         }
       }
     }
-  }, [canvasState.username])
+  }, [canvasState.username, params.id]);
+
+  //отримання поточного зображення і завантаження його
+  useEffect(() => {
+    const id = params.id;
+    pictureService.getPicture(id)
+      .then(data => {
+        if (data?.picture) {
+          //console.log("Малюнок отримано");
+          canvasState.data = data.picture;
+          canvasState.setPicture();
+        }
+      });
+  }, [params.id]);
 
   const mouseDownHandler = (e) => {
     canvasState.pushToUndo(canvasRef.current.toDataURL());
   }
 
+  const mouseUpHandler = (e) => {
+    canvasState.uploadPicture();
+  }
+
   const drawHandler = (msg) => {
     const figure = msg.figure;
     //const ctx = canvasRef.current.getContext('2d');
-    const ctx = toolState.getContext();
-    
-    //збергіаємо стилі поточного сеанcу
-    const curFillColor = toolState.getFillColor();
-    const curStrokeColor = toolState.getStrokeColor();
-    const curLineWidth = toolState.getLineWidth();
+    toolState.drawHandler(figure);
+  }
 
-    //встановлюємо стилі, які прийшли
-    toolState.setFillColor(figure.fillColor);
-    toolState.setStrokeColor(figure.strokeColor);
-    toolState.setLineWidth(figure.lineWidth);
-
-    switch (figure.type) {
-      case 'brush':
-        Brush.draw(ctx, figure.x, figure.y);
-        break;
-    
-      case 'finish_brush':
-        ctx.beginPath();
-        break;
-
-      case 'rect':
-        Rect.drawRect(ctx, figure.x, figure.y, figure.w, figure.h);
-        break;
-
-      case 'circle':
-        Circle.drawCircle(ctx, figure.x, figure.y, figure.r);
-        break;
-
-      case 'line':
-        Line.drawLine(ctx, figure.startX, figure.startY, figure.x, figure.y);
-        break;
-
-      case 'eraser':
-        Eraser.draw(ctx, figure.x, figure.y);
-        break;
-
-      case 'finish_eraser':
-        ctx.beginPath();
-        break;
-      
-      case 'clearCanvas':
-        Clear.clearCanvas(ctx);
-        break;
-
-      default:
-        break;
-    }
-    //повертаємо поточні стилі
-    toolState.setFillColor(curFillColor);
-    toolState.setStrokeColor(curStrokeColor);
-    toolState.setLineWidth(curLineWidth);
+  const onloadHandler = (e) => {
+    canvasState.setPicture();
   }
 
   const connectionHandler = () => {
@@ -135,7 +111,9 @@ const Canvas = observer(() => {
             <Modal.Title>Введіть ваш нік</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <input type='text' ref={usernameRef}/>
+            <input 
+              type='text' 
+              ref={usernameRef} />
           </Modal.Body>
           <Modal.Footer>
             <Button variant="primary" onClick={() => connectionHandler()}>
@@ -143,7 +121,20 @@ const Canvas = observer(() => {
             </Button>
           </Modal.Footer>
         </Modal>
-      <canvas onMouseDown={e => mouseDownHandler(e)} ref={canvasRef} width={toolState.widthCanvas} height={toolState.heightCanvas} />
+        <ul className='links'>
+          {pictures.map((picture) => {
+            const nav = `/${picture.session}`;
+            return (<li key={picture._id}><Link to={nav} >{picture.session}</Link></li>)
+          })}
+        </ul>
+      <canvas 
+        onMouseDown={e => mouseDownHandler(e)} 
+        onMouseUp={e => mouseUpHandler(e)} 
+        onLoad={e => onloadHandler(e)}
+        ref={canvasRef} 
+        width={toolState.widthCanvas} 
+        height={toolState.heightCanvas} 
+      />
     </div>
   );
 });

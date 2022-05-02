@@ -3,26 +3,26 @@ import SettingBar from "./components/SettingBar";
 import Toolbar from "./components/Toolbar";
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
 import "./styles/app.scss"
+import { useState } from "react";
 
 function App() {
   const app = () => {
     return(
-      <>
+      <div className="app">
         <Toolbar />
         <SettingBar />
         <Canvas />
-      </>
+      </div>
     )
   }
+  const [id, setId] = useState(new Date().getTime().toString(16));
 
   return (
     <BrowserRouter>
-      <div className="app">
-        <Routes>
-          <Route path="/" element={<Navigate to={`f${(+new Date).toString(16)}`} />}/>
-          <Route path="/:id" element = {app()}/>
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<Navigate to={`f${id}`} />}/>
+        <Route path="/:id" element = {app()}/>
+      </Routes>
     </BrowserRouter>
   );
 }

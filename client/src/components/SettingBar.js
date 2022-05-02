@@ -1,5 +1,6 @@
 import React from 'react';
 import toolState from '../store/toolState';
+import canvasState from '../store/canvasState';
 import "../styles/toolbar.scss"
 
 const SettingBar = () => {
@@ -19,6 +20,7 @@ const SettingBar = () => {
         id='stroke-color'
         type='color'
         style={{ margin: '0 10px' }} />
+        <span style={{marginLeft:'auto'}}>Користувач - {canvasState.username}</span>
     </div>
   );
 };
