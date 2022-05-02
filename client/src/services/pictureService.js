@@ -1,7 +1,8 @@
 import axios from 'axios';
+import env from "react-dotenv"
 
 class PictureService {
-  URL_SERVER = process.env.URL_HTTP || 'http://localhost:5000/';
+  URL_SERVER = env.URL_HTTP || '';
 
   async getAllPictures(){
     const pictures = await axios.get(`${this.URL_SERVER}picture/getAll`);

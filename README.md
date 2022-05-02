@@ -29,3 +29,7 @@
 * WebSocket
 * Canvas
 
+### Запуск
+* server - npm run start
+* client - npm start
+

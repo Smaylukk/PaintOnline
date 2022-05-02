@@ -7,6 +7,7 @@ import Brush from '../tools/Brush';
 import { Modal, Button } from "react-bootstrap";
 import { Link, Navigate, useParams } from 'react-router-dom';
 import pictureService from '../services/pictureService';
+import env from "react-dotenv"
 
 
 const Canvas = observer(() => {
@@ -15,7 +16,7 @@ const Canvas = observer(() => {
   const [modal, setModal] = useState(true);
   const [pictures, setPictures] = useState([]);
   const params = useParams();
-  const URL_WS = process.env.URL_WS || 'ws://localhost:5000/';
+  const URL_WS = env.URL_WS || '';
 
   //встановлення канвасу
   useEffect(() => {
