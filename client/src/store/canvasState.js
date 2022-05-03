@@ -86,6 +86,10 @@ class CanvasState {
     }
   }
 
+  clearCanvas() {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
   setUndoList(list){
     this.undoList = list;
   }

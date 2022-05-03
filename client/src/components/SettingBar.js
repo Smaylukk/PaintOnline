@@ -2,8 +2,9 @@ import React from 'react';
 import toolState from '../store/toolState';
 import canvasState from '../store/canvasState';
 import "../styles/toolbar.scss"
+import { observer } from 'mobx-react-lite';
 
-const SettingBar = () => {
+const SettingBar = observer(() => {
   return (
     <div className='setting-bar'>
       <label htmlFor='line-width' >Товщина лінії</label>
@@ -23,6 +24,6 @@ const SettingBar = () => {
         <span style={{marginLeft:'auto'}}>Користувач - {canvasState.username}</span>
     </div>
   );
-};
+});
 
 export default SettingBar;

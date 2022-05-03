@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import pictureService from '../services/pictureService';
 import canvasState from '../store/canvasState';
 import toolState from '../store/toolState';
 import "../styles/toolbar.scss"
@@ -11,6 +13,7 @@ import Rect from '../tools/Rect';
 
 const Toolbar = () => {
   const [instr, setInstr] = useState(1);
+  const params = useParams();
 
   const changeColor = (e) => {
     toolState.setFillColor(e.target.value);
@@ -77,8 +80,9 @@ const Toolbar = () => {
         title='Вперед'
       />
       <button 
+        onClick={e => pictureService.downloadPicture(params.id)}
         className='toolbar__btn save'
-        title='Зберегти' 
+        title='Завантажити' 
       />
     </div>
   );

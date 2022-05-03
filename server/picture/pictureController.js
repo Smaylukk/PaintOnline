@@ -1,8 +1,10 @@
 const pictureService = require("./pictureService");
+const path = require('path');
+const fs = require('fs');
 
 class PictureController {
 
-  errorHandler(res, err){
+  async errorHandler(res, err){
     res.status(500).json(err);
   }
 
@@ -20,8 +22,7 @@ class PictureController {
       res.status(200).json(picture);
     } catch (error) {
       console.log(error);
-      this.errorHandler(res, error);
-      return res;
+      res.status(500).json(error);
     }
   }
 
@@ -33,7 +34,8 @@ class PictureController {
       res.status(200).json(picture);
     } catch (error) {
       console.log(error);
-      return errorHandler(res, error);
+      res.status(500).json(error);
+      return res;
     }
   }
 
@@ -44,7 +46,30 @@ class PictureController {
       res.status(200).json(pictures);
     } catch (error) {
       console.log(error);
-      return errorHandler(res, error);
+      res.status(500).json(error);
+      return res;
+    }
+  }
+
+  async downloadPicture(req, res, next) {
+    try {
+      const session = req.params.id;
+      const picture = await pictureService.getPicture(session);
+
+      if (picture) {
+        let data = picture.picture;
+        data = data.replace('data:image/png;base64,', '');
+        let filename = path.resolve(__dirname, '..', 'files', session + '.png');
+        fs.writeFileSync(filename, data, {encoding: 'base64'});
+        
+        res.download(filename, session + '.png');
+      }else{
+
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+      return res;
     }
   }
 

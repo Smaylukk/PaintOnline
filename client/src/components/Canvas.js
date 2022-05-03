@@ -5,9 +5,10 @@ import toolState from '../store/toolState';
 import '../styles/canvas.scss'
 import Brush from '../tools/Brush';
 import { Modal, Button } from "react-bootstrap";
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import pictureService from '../services/pictureService';
 import env from "react-dotenv"
+import tools from '../tools/tools';
 
 
 const Canvas = observer(() => {
@@ -40,6 +41,7 @@ const Canvas = observer(() => {
 
       toolState.setTool(new Brush(canvasRef.current, socket, params.id))
 
+      
       socket.onopen = () => {
         socket.send(JSON.stringify({
           id: params.id,
@@ -53,10 +55,10 @@ const Canvas = observer(() => {
         
         switch (msg.method) {
           case 'connection':
-            //console.log(msg);   
+            console.log(msg);   
             break;        
           case 'draw':
-            //console.log(msg);   
+            console.log(msg);   
             drawHandler(msg);
             break;
 
@@ -70,6 +72,9 @@ const Canvas = observer(() => {
   //отримання поточного зображення і завантаження його
   useEffect(() => {
     const id = params.id;
+
+    canvasState.clearCanvas();
+    
     pictureService.getPicture(id)
       .then(data => {
         if (data?.picture) {
@@ -123,6 +128,7 @@ const Canvas = observer(() => {
           </Modal.Footer>
         </Modal>
         <ul className='links'>
+        <li><Link to={`/${tools.getNewId()}`} >Новий малюнок</Link></li>
           {pictures.map((picture) => {
             const nav = `/${picture.session}`;
             return (<li key={picture._id}><Link to={nav} >{picture.session}</Link></li>)

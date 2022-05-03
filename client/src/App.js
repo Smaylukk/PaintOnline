@@ -3,7 +3,7 @@ import SettingBar from "./components/SettingBar";
 import Toolbar from "./components/Toolbar";
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
 import "./styles/app.scss"
-import { useState } from "react";
+import tools from "./tools/tools";
 
 function App() {
   const app = () => {
@@ -15,7 +15,7 @@ function App() {
       </div>
     )
   }
-  const [id, setId] = useState(new Date().getTime().toString(16));
+  const id = tools.getNewId();
 
   return (
     <BrowserRouter>
