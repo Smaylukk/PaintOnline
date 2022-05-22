@@ -3,8 +3,10 @@ import Brush from '../tools/Brush';
 import Circle from '../tools/Circle';
 import Clear from '../tools/Clear';
 import Eraser from '../tools/Eraser';
+import Fill from '../tools/Fill';
 import Line from '../tools/Line';
 import Rect from '../tools/Rect';
+import Spray from '../tools/Spray';
 
 class ToolState  {
   tool = null;
@@ -101,6 +103,14 @@ class ToolState  {
 
       case 'clearCanvas':
         Clear.clearCanvas(ctx);
+        break;
+
+      case 'spray':
+        Spray.draw(ctx, figure.x, figure.y);
+        break;
+
+      case 'fillCanvas':
+        Fill.fillCanvas(ctx, figure.x, figure.y);
         break;
 
       default:

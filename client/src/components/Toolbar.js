@@ -8,8 +8,10 @@ import Brush from '../tools/Brush';
 import Circle from '../tools/Circle';
 import Clear from '../tools/Clear';
 import Eraser from '../tools/Eraser';
+import Fill from '../tools/Fill';
 import Line from '../tools/Line';
 import Rect from '../tools/Rect';
+import Spray from '../tools/Spray';
 
 const Toolbar = () => {
   const [instr, setInstr] = useState(1);
@@ -29,6 +31,13 @@ const Toolbar = () => {
           toolState.setTool(new Brush(canvasState.canvas, canvasState.socket, canvasState.sessionId));
           setInstr(1);
         }}/>
+      <button
+        className={"toolbar__btn spray" + (instr === 7 ? " active" : "")}
+        title='Спрей'
+        onClick={(e) => {
+          toolState.setTool(new Spray(canvasState.canvas, canvasState.socket, canvasState.sessionId));
+          setInstr(7);
+        }} />
       <button 
         className={"toolbar__btn rect" + (instr === 2 ? " active" : "")}
         title='Прямокутник'
@@ -57,6 +66,13 @@ const Toolbar = () => {
           toolState.setTool(new Line(canvasState.canvas, canvasState.socket, canvasState.sessionId));
           setInstr(5);
         }}/>
+      <button
+        className={"toolbar__btn fill " + (instr === 8 ? " active" : "")}
+        title='Заливка'
+        onClick={(e) => {
+          toolState.setTool(new Fill(canvasState.canvas, canvasState.socket, canvasState.sessionId));
+          setInstr(8);
+        }} />
       <button
         className={"toolbar__btn clear " + (instr === 6 ? " active" : "")}
         title='Очистка'
